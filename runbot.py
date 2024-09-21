@@ -76,7 +76,7 @@ def generate_webhooks(webhook_url, webhook_name, runs):
         embed.set_author(name='Run verified!',url=run.weblink)
         embed.set_timestamp(timestamp=datetime.datetime.fromisoformat(run.submitted))
         embed.add_embed_field(name='Category', value='[{}]({})'.format(cat_name, category.weblink))
-        if run.level.data is not None:
+        if run.level.data is not None and len(run.level.data) > 0:
             embed.add_embed_field(name='Level', value=run.level.data.name)
         for var_data in variables:
             embed.add_embed_field(name=var_data[0].name, value=vars(var_data[0].values.values)[var_data[1]].label)
