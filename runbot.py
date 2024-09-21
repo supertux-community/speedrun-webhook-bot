@@ -58,6 +58,8 @@ def generate_webhooks(webhook_url, webhook_name, runs):
         embed.set_author(name='Run verified!',url=run.weblink)
         embed.set_timestamp(timestamp=datetime.datetime.fromisoformat(run.submitted))
         embed.add_embed_field(name='Category', value='[{}]({})'.format(cat_name, category.weblink))
+        if run.level.data is not None:
+            embed.add_embed_field(name='Level', value=run.level.data.name)
         embed.add_embed_field(name='Time', value='[{}]({})'.format(tm, run.weblink))
         if has_igt:
             embed.add_embed_field(name='In-game Time', value='[{}]({})'.format(igt, run.weblink))
@@ -106,7 +108,7 @@ def main():
 
     webhook_url = config['webhook']
     webhook_name = config['name']
-    api_url = 'https://www.speedrun.com/api/v1/runs?embed=game,category,players&'+'&'.join(config['params'])
+    api_url = 'https://www.speedrun.com/api/v1/runs?embed=game,category,level,players&'+'&'.join(config['params'])
 
     print(webhook_url + '\n')
     print(webhook_name + '\n')
