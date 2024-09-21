@@ -45,6 +45,7 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_SUPERTUX_URL }}
         run: |
           python runbot.py --config=config/supertux.json --webhook=$DISCORD_WEBHOOK_URL
+          python runbot.py --config=config/supertux_ce.json --webhook=$DISCORD_WEBHOOK_URL
 
       - name: Check for updated run files
         run: |
