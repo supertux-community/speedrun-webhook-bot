@@ -114,7 +114,9 @@ def get_games(series):
 
 def main():
     parser = argparse.ArgumentParser(description='Update a discord channel with runs from speedrun.com',fromfile_prefix_chars='@')
-    parser.add_argument('--config', dest='config', help='Path to json configuration file')
+    parser.add_argument('--config', dest='config', help='Path to JSON configuration file')
+    parser.add_argument('--webhook', dest='webhook', help='Webhook URL [optional]')
+    parser.add_argument('--name', dest='name', help='Webhook name to override the default [optional]')
 
 
     args = parser.parse_args()
@@ -123,15 +125,18 @@ def main():
         exit(1)
 
 
-
     config = read_config(args.config)
 
-    webhook_url = config['webhook']
-    webhook_name = config['name']
+    if args.webhook is None:
+        webhook_url = config['webhook']
+    else:
+        webhook_url = args.webhook
+    if args.name is None:
+        webhook_name = config['name']
+    else:
+        webhook_name = args.name
     api_url = 'https://www.speedrun.com/api/v1/runs?embed=game,category,level,players&'+'&'.join(config['params'])
 
-    print(webhook_url + '\n')
-    print(webhook_name + '\n')
     print(api_url + '\n')
 
     series = None
