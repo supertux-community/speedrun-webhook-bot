@@ -30,10 +30,12 @@ jobs:
           python runbot.py --config=config/supertux.json --webhook=$DISCORD_WEBHOOK_URL
           python runbot.py --config=config/supertux_ce.json --webhook=$DISCORD_WEBHOOK_URL
 
-      - name: Check for updated run files
+      - name: Stage updated run files
         run: |
+          git add runs/
+          git diff --staged
           RUNS_UPDATED=true
-          if git diff --exit-code runs/; then
+          if git diff --staged --exit-code; then
             RUNS_UPDATED=false
           fi
           echo "RUNS_UPDATED=$(echo $RUNS_UPDATED)" >> $GITHUB_ENV
@@ -43,7 +45,5 @@ jobs:
         run: |
           git config --global user.email "speedrun-webhook-bot"
           git config --global user.name "Speedrun Webhook Bot"
-          git add runs/
-          git diff --staged
           git commit -m "Update run files"
           git push origin HEAD:workflow
