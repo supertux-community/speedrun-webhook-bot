@@ -44,8 +44,11 @@ def get_category_variables(run):
     return variables.data
 
 def get_variables(run):
-    variables = get_category_variables(run)
     run_variables = vars(run.values)
+    if len(run_variables) == 0:
+        return []
+
+    variables = get_category_variables(run)
 
     result = []
     for variable in variables:
