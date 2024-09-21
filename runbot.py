@@ -9,20 +9,12 @@ from time import sleep
 from discord_webhook import DiscordWebhook, DiscordEmbed
 from types import SimpleNamespace as Namespace
 
-
-   
-
 def get_runs(url):
     r = requests.get(url)
     runs = json.loads(r.text, object_hook=lambda d: Namespace(**d))
 
     runs.data.reverse()
     return runs.data
-
-
-
-
-
 
 def get_users(run):
     users_str = ''
@@ -55,7 +47,7 @@ def generate_webhooks(webhook_url, webhook_name, runs):
         has_igt = run.times.ingame is not None and run.times.ingame != run.times.primary
         igt = str(datetime.timedelta(seconds=run.times.ingame_t))
         url = run.weblink
-        print ('{}: {} - {} - {} \n {}'.format(users,game,category,tm,url))
+        print ('{}: {} - {} - {} \n {}\n\n'.format(users,game,category,tm,url))
 
         webhook = DiscordWebhook(url=webhook_url, username=webhook_name)
         cover_art = getattr(game.assets, 'cover-small').uri
@@ -63,12 +55,12 @@ def generate_webhooks(webhook_url, webhook_name, runs):
         embed.set_thumbnail(url=cover_art)
         for user in users:
             embed.add_embed_field(name='Runner', value=user.names.international)
-        embed.set_author(name='View on speedrun.com',url=run.weblink)
-        embed.set_timestamp(run.submitted)
-        embed.add_embed_field(name='Category', value=cat_name, url=category.weblink)
-        embed.add_embed_field(name='Time', value=tm, url=run.weblink)
+        embed.set_author(name='Run verified!',url=run.weblink)
+        embed.set_timestamp(timestamp=datetime.datetime.fromisoformat(run.submitted))
+        embed.add_embed_field(name='Category', value='[{}]({})'.format(cat_name, category.weblink))
+        embed.add_embed_field(name='Time', value='[{}]({})'.format(tm, run.weblink))
         if has_igt:
-            embed.add_embed_field(name='In-game Time', value=igt, url=run.weblink)
+            embed.add_embed_field(name='In-game Time', value='[{}]({})'.format(igt, run.weblink))
         embed.set_footer(text='Submitted ')
         webhook.add_embed(embed)
         sleep(5)
@@ -127,7 +119,7 @@ def main():
         pass
 
     raw_runs = []
-    if series is not None and series is not "":
+    if series is not None and series != "":
         games = get_games(series) # /series/{series}/games
         for game in games:
             raw_runs.extend(get_runs(api_url+'&game='+game.id))
