@@ -1,0 +1,6 @@
+{
+     "name":  "",
+  "runfile":  "runs/supertux_ce.json",
+   "params": [ "game=3dx2wl41", "status=verified", "orderby=verify-date",
+               "direction=desc", "max=15" ]
+}
