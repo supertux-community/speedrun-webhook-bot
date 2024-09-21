@@ -37,11 +37,29 @@ def get_game(run):
 def get_category(run):
     return (run.category.data.name, run.category.data)
 
+def get_category_variables(run):
+    r = requests.get('https://www.speedrun.com/api/v1/categories/{}/variables'.format(run.category.data.id))
+    variables = json.loads(r.text, object_hook=lambda d: Namespace(**d))
+
+    return variables.data
+
+def get_variables(run):
+    variables = get_category_variables(run)
+    run_variables = vars(run.values)
+
+    result = []
+    for variable in variables:
+        if variable.id in run_variables:
+            result.append((variable, run_variables[variable.id]))
+
+    return result
+
 def generate_webhooks(webhook_url, webhook_name, runs):
     for run in runs:
         (users_str, users) = get_users(run)
         (game_name, game) = get_game(run)
         (cat_name, category) = get_category(run)
+        variables = get_variables(run)
         has_rt = run.times.realtime is not None
         tm = str(datetime.timedelta(seconds=run.times.primary_t))
         has_igt = run.times.ingame is not None and run.times.ingame != run.times.primary
@@ -60,6 +78,8 @@ def generate_webhooks(webhook_url, webhook_name, runs):
         embed.add_embed_field(name='Category', value='[{}]({})'.format(cat_name, category.weblink))
         if run.level.data is not None:
             embed.add_embed_field(name='Level', value=run.level.data.name)
+        for var_data in variables:
+            embed.add_embed_field(name=var_data[0].name, value=vars(var_data[0].values.values)[var_data[1]].label)
         embed.add_embed_field(name='Time', value='[{}]({})'.format(tm, run.weblink))
         if has_igt:
             embed.add_embed_field(name='In-game Time', value='[{}]({})'.format(igt, run.weblink))
